@@ -1,0 +1,69 @@
+function UpdateForm(){
+
+  var form = FormApp.openById('FORM_ID');                                        // Using an existing form 
+  var allitems = form.getItems();                                                //Getting all the items from the Google Form 
+  var i = 0,
+      thisItem,
+      thisItemType,
+      myListItem;
+  
+  var ss = SpreadsheetApp.getActive();                                            // Script is bounded to the active spreadsheet
+  var sheet = ss.getSheets()[1];                                                  // Returns the first sheet                                               
+  var range = sheet.getDataRange();                                               
+  var values = range.getValues();                                                 // Getting the values from Spreadsheet
+  
+  var MentorChoices = [];
+ 
+  var TeamSheet = ss.getSheets()[2];
+  var TeamRange = TeamSheet.getDataRange();
+  var TeamValues = TeamRange.getValues();
+  
+  var TeamChoices = [];
+  
+  for(var i = 3; i < values.length;i++){
+    
+  var session = values[i];
+  var firstname = session[1];
+  var lastname = session[2];
+  
+  var Mentors = firstname + " " + lastname; 
+  
+    if(!MentorChoices[Mentors])
+    {  
+       MentorChoices.push(Mentors);             
+    }
+  }
+  
+  for (var j = 3; j < TeamValues.length; j++){
+    
+    var row = TeamValues[j];
+    var Teams = row[0];
+        
+    if(!TeamChoices[Teams])
+    {
+       TeamChoices.push(Teams);
+    }  
+  }
+  
+  for (i = 0; i < 1; i++){   
+  thisItem = allitems[i];
+  thisItemType =thisItem.getType();
+    Logger.log('thisItemType: ' + thisItemType); 
+    
+    if(thisItemType == FormApp.ItemType.LIST)
+    {
+      myListItem = thisItem.asListItem();
+      myListItem.setChoiceValues(MentorChoices);   
+    }
+  
+  var item2 = allitems[i+1];
+  var item2Type = item2.getType();
+    Logger.log('thisItemType: ' + item2Type );
+    
+    if(thisItemType == FormApp.ItemType.LIST)
+    {
+      var myTeamItem = item2.asListItem();
+      myTeamItem.setChoiceValues(TeamChoices);
+    }    
+  }
+}
